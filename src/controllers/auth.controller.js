@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/user.model');
 
 module.exports = {
     login: async (req, res) => {
@@ -57,7 +58,10 @@ module.exports = {
 
         res.clearCookie('jwt', { httpOnly: true, secure: true });
         res.json({ message: 'Logged out' });
+    },
+
+    // forgot password logic:
+    passwordReset: async (req, res) => {
+        console.log("implement this feature.")
     }
-
-
 }
