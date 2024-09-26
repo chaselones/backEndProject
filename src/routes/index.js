@@ -7,7 +7,7 @@ router.use('/users', userRouter)
 router.use('/auth', authRouter)
 
 router.all('*', (req, res) => {
-    res.status(404).json({ message: 'Route not found' })
+    res.status(404).json({ message: 'Route not found.  TRY AGAIN!' })
 })
 
 module.exports = router

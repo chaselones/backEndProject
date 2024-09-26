@@ -2,16 +2,33 @@ const jwt = require('jsonwebtoken');
 
 module.exports = {
     authJWT: (req, res, next) => {
-        // get tokens from session:
-        const token = req?.session?.accessToken;
 
-        if (!token) return res.sendStatus(401);
+        const { accessToken, refreshToken } = req.session;
 
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-            if (err) return res.sendStatus(403);
-            req.user = user; // Attach user data to request
-            next();
-        });
+        if (accessToken) {
+            jwt.verify(accessToken, process.env.JWT_SECRET, (err, user) => {
+                if (err) {
+                    if (!refreshToken) return res.sendStatus(401);
+                    jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
+                        if (err) return res.sendStatus(401);
+                        const newAccessToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+                        req.session.accessToken = newAccessToken;
+                        next();
+                    });
+                } else {
+                    req.user = user;
+                    next();
+                }
+            });
+        } else {
+            if (!refreshToken) return res.sendStatus(401);
+            jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
+                if (err) return res.sendStatus(401);
+                const newAccessToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+                req.session.accessToken = newAccessToken;
+                next();
+            });
+        }
     },
 
     isAdmin: (req, res, next) => {
@@ -23,6 +40,4 @@ module.exports = {
         if (req.user.role !== 'user') return res.sendStatus(403);
         next();
     }
-
-
 }

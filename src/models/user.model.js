@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    refreshToken: { type: String }, // Optional for JWT refresh tokens
+    refreshToken: { type: String, default: null }, // Optional for JWT refresh tokens
 }, { timestamps: true });
 
 // Hash password before saving
@@ -24,3 +24,16 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
+
+
+/*
+EXMAPLE JSON DATA:
+
+{
+    "username": "john",
+    "email": "johnboy@gmail.com",
+    "password": "password",
+    "role": "admin"
+}
+
+*/

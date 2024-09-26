@@ -5,7 +5,6 @@ const {connectDB} = require('./src/config/dbConnection')
 // cookie-session middleware:
 const session = require('cookie-session')
 
-
 // ENV Variables:
 require('dotenv').config()
 
@@ -13,13 +12,14 @@ require('dotenv').config()
 connectDB()
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(cors())
+
 app.use(session({
     secret: process.env.COOKIE_SECRET,
     maxAge: 1000 * 60 * 60 * 24 * 3,  // 3 days
     httpOnly: true,
-    secure: true,
-    sameSite: 'none' // none means no restrictions.... for now.
+    // Verify these settings later.
 }))
 
 // Routes

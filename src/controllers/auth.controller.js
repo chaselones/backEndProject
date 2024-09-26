@@ -43,7 +43,10 @@ module.exports = {
 
             // Generate new access token
             const newAccessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+            // set session:
+            req.session.accessToken = newAccessToken;
             res.json({ accessToken: newAccessToken });
+
         } catch (error) {
             res.sendStatus(403);
         }
@@ -60,7 +63,7 @@ module.exports = {
             await user.save();
         }
 
-        res.clearCookie('jwt', { httpOnly: true, secure: true });
+        req.session = null; // Clear session
         res.json({ message: 'Logged out' });
     },
 
