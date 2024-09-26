@@ -11,7 +11,7 @@ module.exports = {
                     if (!refreshToken) return res.sendStatus(401);
                     jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
                         if (err) return res.sendStatus(401);
-                        const newAccessToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+                        const newAccessToken = jwt.sign({ id: user.id, name: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
                         req.session.accessToken = newAccessToken;
                         next();
                     });
@@ -24,7 +24,7 @@ module.exports = {
             if (!refreshToken) return res.sendStatus(401);
             jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
                 if (err) return res.sendStatus(401);
-                const newAccessToken = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
+                const newAccessToken = jwt.sign({ id: user.id, name: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
                 req.session.accessToken = newAccessToken;
                 next();
             });

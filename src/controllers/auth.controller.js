@@ -27,30 +27,8 @@ module.exports = {
     },
 
     // refresh token logic:
-
-    refresh: async (req, res) => {
-        const { accessToken, refreshToken } = req.session;
-
-        if (!refreshToken) return res.sendStatus(401);
-
-        try {
-            const payload = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
-            const user = await User.findById(payload.id);
-
-            if (!user || user.refreshToken !== refreshToken) {
-                return res.sendStatus(403); // Invalid refresh token
-            }
-
-            // Generate new access token
-            const newAccessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
-            // set session:
-            req.session.accessToken = newAccessToken;
-            res.json({ accessToken: newAccessToken });
-
-        } catch (error) {
-            res.sendStatus(403);
-        }
-    },
+    // no need for refresh token logic, as we store it in the session.
+    // we have a middleware that automatically refreshes the access token!
 
     logout: async (req, res) => {
         const { refreshToken } = req.session;
