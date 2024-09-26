@@ -1,8 +1,10 @@
 const router = require('express').Router()
 let user = require('../controllers/user.controller')
 
+const { authJWT, isAdmin } = require('../middleware/auth.middleware')
+
 router.route('/')
-    .get(user.list)
+    .get(authJWT, user.list)
     .post(user.create)
 
 router.route('/:id')
