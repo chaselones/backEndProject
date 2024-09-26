@@ -12,25 +12,29 @@ module.exports = {
 
         // Generate Access and Refresh Tokens
         const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
-        const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 
         // Optionally, store refresh token in DB
         user.refreshToken = refreshToken;
         await user.save();
 
-        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true }); // Store refresh token in httpOnly cookie
+        // res.cookie('jwt', refreshToken, { httpOnly: true, secure: true }); // Store refresh token in httpOnly cookie
+        // store acces and refresh tokens in session:
+        req.session.accessToken = accessToken;
+        req.session.refreshToken = refreshToken;
+
         res.json({ accessToken });
     },
 
     // refresh token logic:
 
     refresh: async (req, res) => {
-        const { jwt: refreshToken } = req.cookies;
+        const { accessToken, refreshToken } = req.session;
 
         if (!refreshToken) return res.sendStatus(401);
 
         try {
-            const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+            const payload = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
             const user = await User.findById(payload.id);
 
             if (!user || user.refreshToken !== refreshToken) {
