@@ -34,10 +34,5 @@ module.exports = {
     isAdmin: (req, res, next) => {
         if (req.user.role !== 'admin') return res.sendStatus(403);
         next();
-    },
-
-    isUser: (req, res, next) => {
-        if (req.user.role !== 'user') return res.sendStatus(403);
-        next();
     }
 }
