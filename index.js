@@ -21,6 +21,9 @@ app.use(session({
     secure: true,
     sameSite: 'none' // none means no restrictions.... for now.
 }))
+
+// Routes
+app.use('/', require('./src/routes'))
 //after this, we can access the session object in req.session.
 // This will decrypt the cookie and store the session data in req.session
 // to save data to the cookie/session, we can simply add properties to req.session

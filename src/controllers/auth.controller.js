@@ -14,7 +14,7 @@ module.exports = {
         const accessToken = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
         const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 
-        // Optionally, store refresh token in DB
+        // the reason we store the refresh token in the database is to invalidate it when the user logs out.
         user.refreshToken = refreshToken;
         await user.save();
 
@@ -50,7 +50,7 @@ module.exports = {
     },
 
     logout: async (req, res) => {
-        const { jwt: refreshToken } = req.cookies;
+        const { refreshToken } = req.session;
 
         if (!refreshToken) return res.sendStatus(204); // No content
 
